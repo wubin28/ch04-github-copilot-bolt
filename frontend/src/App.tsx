@@ -1,6 +1,52 @@
 import React, { useState } from "react";
 import { PenLine, Clock, ChevronRight } from "lucide-react";
 
+/**
+ * The `App` component serves as the main entry point for a React application
+ * that helps users optimize prompts for AI interactions using the RABPOC
+ * framework. This component is structured into two main sections: a left
+ * sidebar for navigation and a main content area for user input and prompt
+ * generation. Below is a breakdown of its functionality:
+ *
+ * ## State Management
+ * - `formData`: An object managed using `useState` to store user inputs for
+ *   the RABPOC framework:
+ *   - `role`: The role the AI should assume.
+ *   - `audience`: The target audience for the AI's response.
+ *   - `boundary`: The scope or boundary of the discussion.
+ *   - `purpose`: The intended purpose or goal of the AI's response.
+ *   - `output`: The desired output format.
+ *   - `concern`: Any concerns or limitations for the AI to consider.
+ *
+ * ## Layout
+ * - **Left Sidebar**: Contains navigation elements and a button to start a new
+ *   session. It also includes links to history items.
+ * - **Main Content**: Provides a form for users to input RABPOC parameters,
+ *   a button to optimize the prompt, and a section to display the optimized
+ *   prompt.
+ *
+ * ## Components and Features
+ * - **Input Fields**: Each RABPOC parameter has a corresponding labeled input
+ *   field. Changes to these fields update the `formData` state.
+ * - **Optimize Prompt Button**: A button that, when clicked, triggers the
+ *   optimization process (logic for this is not implemented in the provided
+ *   code).
+ * - **Optimized Prompt Display**: A placeholder section to display the
+ *   generated optimized prompt.
+ *
+ * ## Styling
+ * - The component uses Tailwind CSS classes for styling, ensuring a responsive
+ *   and visually appealing layout.
+ *
+ * ## Future Modifications
+ * - To modify the RABPOC parameters, update the `formData` state structure and
+ *   corresponding input fields.
+ * - To add new navigation items, update the `<nav>` section in the sidebar.
+ * - To implement prompt optimization logic, handle the click event of the
+ *   "Optimize Prompt" button.
+ *
+ * @returns The main `App` component with a sidebar and a prompt optimization form.
+ */
 function App() {
   const [formData, setFormData] = useState({
     role: "",
