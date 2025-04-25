@@ -80,7 +80,7 @@ function App() {
           </div>
 
           <nav className="space-y-2">
-            <a
+            {/* <a
               href="#"
               className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 text-gray-700"
             >
@@ -93,7 +93,7 @@ function App() {
             >
               免费AI工具推荐
               <ChevronRight size={16} />
-            </a>
+            </a> */}
           </nav>
         </div>
       </aside>
