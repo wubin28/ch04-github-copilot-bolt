@@ -17,6 +17,7 @@ import { PenLine, Clock, ChevronRight } from "lucide-react";
  *   - `purpose`: The intended purpose or goal of the AI's response.
  *   - `output`: The desired output format.
  *   - `concern`: Any concerns or limitations for the AI to consider.
+ * - `optimizedPrompt`: A string managed using `useState` to store the generated optimized prompt.
  *
  * ## Layout
  * - **Left Sidebar**: Contains navigation elements and a button to start a new
@@ -29,10 +30,8 @@ import { PenLine, Clock, ChevronRight } from "lucide-react";
  * - **Input Fields**: Each RABPOC parameter has a corresponding labeled input
  *   field. Changes to these fields update the `formData` state.
  * - **Optimize Prompt Button**: A button that, when clicked, triggers the
- *   optimization process (logic for this is not implemented in the provided
- *   code).
- * - **Optimized Prompt Display**: A placeholder section to display the
- *   generated optimized prompt.
+ *   optimization process and updates the `optimizedPrompt` state.
+ * - **Optimized Prompt Display**: A section to display the generated optimized prompt.
  *
  * ## Styling
  * - The component uses Tailwind CSS classes for styling, ensuring a responsive
@@ -56,6 +55,26 @@ function App() {
     output: "",
     concern: "",
   });
+
+  const [optimizedPrompt, setOptimizedPrompt] = useState("");
+
+  const handleOptimizeClick = () => {
+    const prompt = `As a prompt engineering expert, please generate an English prompt based on the answers to the 6 questions below, targeting AI beginners. The prompt must incorporate the content from all 6 answers to help formulate high-quality questions for AI. Please provide only the prompt itself, without any additional content.
+
+What Role you want AI to play? ${formData.role || "Prompt Optimization Expert"}.
+
+What Audience you want AI to generate content for? ${formData.audience || "AI tool beginners"}.
+
+What Boundary should AI focus on for this discussion? ${formData.boundary || "Prompt optimization"}.
+
+What Purpose you want AI to help you achieve? ${formData.purpose || "find popular prompt optimization tools"}.
+
+What Output format you want AI to generate? ${formData.output || "tool name (official website link)"}.
+
+What Concern you have about this discussion with AI? ${formData.concern || "AI hallucinations (if not found, please be honest and don't make up information)."}.`;
+
+    setOptimizedPrompt(prompt);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -202,16 +221,18 @@ function App() {
             />
           </div>
 
-          <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+          <button 
+            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            onClick={handleOptimizeClick}
+          >
             Optimize Prompt
           </button>
 
           <div className="bg-gray-100 p-6 rounded-lg">
             <h3 className="font-medium mb-2">Optimized Prompt</h3>
-            <p className="text-gray-600">
-              Your optimized prompt will be displayed here. Optimize your prompt
-              now!
-            </p>
+            <pre className="text-gray-600 whitespace-pre-wrap">
+              {optimizedPrompt || "Your optimized prompt will be displayed here. Optimize your prompt now!"}
+            </pre>
           </div>
         </div>
       </main>
