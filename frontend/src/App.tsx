@@ -58,7 +58,7 @@ function App() {
 
   const [optimizedPrompt, setOptimizedPrompt] = useState("");
 
-  const handleOptimizeClick = () => {
+  const handleOptimizeClick = async () => {
     const prompt = `As a prompt engineering expert, please generate an English prompt based on the answers to the 6 questions below, targeting AI beginners. The prompt must incorporate the content from all 6 answers to help formulate high-quality questions for AI. Please provide only the prompt itself, without any additional content.
 
 What Role you want AI to play? ${formData.role || "Prompt Optimization Expert"}.
@@ -73,7 +73,25 @@ What Output format you want AI to generate? ${formData.output || "tool name (off
 
 What Concern you have about this discussion with AI? ${formData.concern || "AI hallucinations (if not found, please be honest and don't make up information)."}.`;
 
-    setOptimizedPrompt(prompt);
+    try {
+      const response = await fetch('http://localhost:3000/api/optimize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ template: prompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to optimize prompt');
+      }
+
+      const data = await response.json();
+      setOptimizedPrompt(data.optimizedPrompt);
+    } catch (error) {
+      console.error('Error optimizing prompt:', error);
+      setOptimizedPrompt('Error: Failed to optimize prompt. Please try again.');
+    }
   };
 
   return (
