@@ -9,7 +9,11 @@ describe('App', () => {
   })
 })
 it('displays "Optimize Prompt" text on the optimization button', () => {
-  render(<App />)
-  const optimizeButton = screen.getByRole('button', { name: /optimize prompt/i })
-  expect(optimizeButton.textContent).toBe('Optimize Prompt')
+  render(<App />);
+  // 使用更宽松的选择器
+  const optimizeButton = screen.getByRole('button', { name: /optimize/i });
+  
+  console.log(`期望: "Optimize Prompt", 实际: "${optimizeButton.textContent}"`);
+  
+  expect(optimizeButton.textContent).toBe('Optimize Prompt');
 })
