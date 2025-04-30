@@ -5,51 +5,96 @@ import OpenAI from 'openai';
 
 dotenv.config();
 
-const app = express();
-const port = process.env.PORT || 3000;
+// 封装API客户端创建，便于依赖注入和测试
+export class ApiClientFactory {
+  createOpenAiClient(): OpenAI {
+    return new OpenAI({
+      baseURL: 'https://api.deepseek.com',
+      apiKey: process.env.DEEPSEEK_API_KEY
+    });
+  }
+}
 
-app.use(cors());
-app.use(express.json());
+// 抽象服务类，包含业务逻辑
+export class OptimizationService {
+  private openai: OpenAI;
 
-const openai = new OpenAI({
-    baseURL: 'https://api.deepseek.com',
-    apiKey: process.env.DEEPSEEK_API_KEY
-});
+  constructor(apiClientFactory: ApiClientFactory) {
+    this.openai = apiClientFactory.createOpenAiClient();
+  }
 
-app.post('/api/optimize', async (req: Request, res: Response) => {
+  async optimizePrompt(template: string): Promise<string> {
+    const completion = await this.openai.chat.completions.create({
+      model: 'deepseek-chat',
+      messages: [
+        { 
+          role: 'user',
+          content: template
+        }
+      ],
+    });
+
+    return completion.choices[0].message.content || '';
+  }
+}
+
+// 路由处理类
+export class ApiController {
+  private optimizationService: OptimizationService;
+
+  constructor(optimizationService: OptimizationService) {
+    this.optimizationService = optimizationService;
+  }
+
+  async handleOptimize(req: Request, res: Response): Promise<void> {
     try {
-        const { template } = req.body;
-        console.log('Received template:', template);
+      const { template } = req.body;
+      console.log('Received template:', template);
 
-        console.log('Calling DeepSeek API...');
-        const completion = await openai.chat.completions.create({
-            model: 'deepseek-chat',
-            messages: [
-                { 
-                    role: 'user',
-                    content: template
-                }
-            ],
-        });
+      console.log('Calling DeepSeek API...');
+      const optimizedPrompt = await this.optimizationService.optimizePrompt(template);
 
-        console.log('DeepSeek API Response:', completion.choices[0].message);
+      console.log('DeepSeek API Response:', optimizedPrompt);
 
-        res.json({ 
-            optimizedPrompt: completion.choices[0].message.content 
-        });
+      res.json({ 
+        optimizedPrompt 
+      });
     } catch (error) {
-        console.error('Error in /api/optimize:', error);
-        res.status(500).json({ 
-            error: 'Failed to optimize prompt',
-            details: error instanceof Error ? error.message : String(error)
-        });
+      console.error('Error in /api/optimize:', error);
+      res.status(500).json({ 
+        error: 'Failed to optimize prompt',
+        details: error instanceof Error ? error.message : String(error)
+      });
     }
-});
+  }
+}
 
-app.listen(port, () => {
+// 创建应用实例，使用依赖注入方式
+export function createApp() {
+  const app = express();
+  app.use(cors());
+  app.use(express.json());
+
+  // 创建依赖实例
+  const apiClientFactory = new ApiClientFactory();
+  const optimizationService = new OptimizationService(apiClientFactory);
+  const apiController = new ApiController(optimizationService);
+
+  // 绑定路由
+  app.post('/api/optimize', (req, res) => apiController.handleOptimize(req, res));
+
+  return app;
+}
+
+// 只有在直接运行此文件时才启动服务器
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const port = process.env.PORT || 3000;
+  const app = createApp();
+  app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-});
+  });
+}
 
 export const config = {
-    type: "module"
+  type: "module"
 };
