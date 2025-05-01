@@ -11,9 +11,14 @@ dotenv.config();
 export class ApiClientFactory {
   createOpenAiClient() {
     // 使用类型断言解决构造函数问题
+    const apiKey = process.env.DEEPSEEK_API_KEY;
+    if (!apiKey) {
+      throw new Error("DEEPSEEK_API_KEY environment variable is not defined");
+    }
+
     return new (OpenAI as any)({
       baseURL: "https://api.deepseek.com",
-      apiKey: process.env.DEEPSEEK_API_KEY,
+      apiKey,
     });
   }
 }
