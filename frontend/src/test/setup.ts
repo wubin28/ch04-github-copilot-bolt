@@ -1,9 +1,7 @@
-import { expect, beforeEach } from 'vitest';
-import { render } from '@testing-library/react';
-import App from '../App';
+import { expect } from 'vitest';
+import '@testing-library/jest-dom';
 
-beforeEach(() => {
-  render(<App />);
-});
+// Only import what's needed for setup, not actual component rendering
 
+// Make expect available globally if needed
 global.expect = expect;
